@@ -1,0 +1,53 @@
+group 'volumecopy'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        url "http://repository.mapr.com/maven/"
+    }
+}
+
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.mapr.volumecopy.VolumeCopy'
+        )
+    }
+}
+
+dependencies {
+
+    compile group: 'org.apache.hadoop', name: 'hadoop-hdfs' , version: '2.7.0-mapr-1607'
+
+    compile ('com.mapr.tools:mapr-tools:5.2.1-mapr'){
+        exclude group: "org.apache.hadoop", module: '*'
+    }
+
+    compile ('com.mapr.fs:mapr-hbase:5.2.1-mapr'){
+        exclude group: "org.apache.zookeeper", module: '*'
+    }
+    compile ('com.mapr.db:maprdb:5.2.1-mapr'){
+        exclude group: "org.apache.hadoop", module: '*'
+    }
+    compile ('com.mapr.db:maprdb-mapreduce:5.2.1-mapr'){
+        exclude group: "org.apache.hadoop", module: '*'
+    }
+
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+//
+//configurations.all {
+//    exclude group: "org.apache.zookeeper", module: '*'
+//}
+
+//configurations {
+//    runtime.exclude group: "*" , module:'*'
+//}
