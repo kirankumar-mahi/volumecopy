@@ -994,7 +994,7 @@ public class VolumeCopy implements Tool {
         fileSystem = FileSystem.get(conf);
         Path clusterNodesDir = new Path(args[0]);
         ArrayList<FileStatus> finalFileStatusList = getDirectoryStructure(fs, clusterNodesDir);
-        ArrayList<String> argsList = new ArrayList();
+        //ArrayList<String> argsList = new ArrayList();
 
         for(FileStatus fileStatus:finalFileStatusList){
 
@@ -1004,19 +1004,26 @@ public class VolumeCopy implements Tool {
                     fs.mkdirs(new Path(args[1]+fileStatus.getPath().getParent().toUri().getPath()));
                     maprTable = new MapRHTable();
                     maprTable.init(conf, TableMappingRulesFactory.create(conf).getMaprTablePath(fileStatus.getPath().toUri().getPath()));
-                    argsList.add("-src");
-                    argsList.add(fileStatus.getPath().toUri().getPath());
-                    argsList.add("-dst");
-                    argsList.add(args[1]+fileStatus.getPath().toUri().getPath());
-                    argsList.add("-mapreduce");
-                    argsList.add("false");
+                    ArrayList<String> argsList = new ArrayList(){{
+
+                        add("-src");
+                        add(fileStatus.getPath().toUri().getPath());
+                        add("-dst");
+                        add(args[1]+fileStatus.getPath().toUri().getPath());
+                        add("-mapreduce");
+                        add("false");
+                        add("-bulkload");
+                        add("false");
+                        add("-prbugcaxt");
+                    }};
+
 
                     if(maprTable.isJson()){
-                        LOG.info("Cpoying JSON Table :: "+maprTable.getTablePath().getName());
+                        LOG.info("Copying JSON Table :: "+maprTable.getTablePath().getName());
                         ToolRunner.run(conf, new com.mapr.db.mapreduce.tools.CopyTable(), argsList.toArray(new String[argsList.size()]));
                         argsList.clear();
                     }else{
-                        LOG.info("Cpoying Binary Table :: "+maprTable.getTablePath().getName());
+                        LOG.info("Copying Binary Table :: "+maprTable.getTablePath().getName());
                         ToolRunner.run(conf, new com.mapr.fs.hbase.tools.mapreduce.CopyTable(), argsList.toArray(new String[argsList.size()]));
                         argsList.clear();
                     }
@@ -1036,7 +1043,13 @@ public class VolumeCopy implements Tool {
         job.set("fs.hdfs.impl", "org.apache.hadoop.hdfs.DistributedFileSystem");
 
         VolumeCopy distcp = new VolumeCopy(job);
-        int res = ToolRunner.run(distcp, args);
+        ArrayList<String> disctCpArgsList = new ArrayList(){{
+            add("-update");
+            add(args[0]);
+            add(args[1]);
+        }} ;
+
+        int res = ToolRunner.run(distcp, disctCpArgsList.toArray(new String[disctCpArgsList.size()]));
         System.exit(res);
     }
 
