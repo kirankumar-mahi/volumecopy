@@ -1014,7 +1014,7 @@ public class VolumeCopy implements Tool {
                         add("false");
                         add("-bulkload");
                         add("false");
-                        add("-prbugcaxt");
+                        
                     }};
 
 
@@ -1047,6 +1047,7 @@ public class VolumeCopy implements Tool {
             add("-update");
             add(args[0]);
             add(args[1]);
+            add("-prbugcaxt");
         }} ;
 
         int res = ToolRunner.run(distcp, disctCpArgsList.toArray(new String[disctCpArgsList.size()]));
